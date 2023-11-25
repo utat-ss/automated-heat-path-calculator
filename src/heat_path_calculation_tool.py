@@ -157,4 +157,6 @@ def read_csv(filepath = 'Battery Support Bracket to Panel - Sheet1.csv'):
       elif(row[0] == "LOW"): high_low = 0
       eff_resistance+=1/get_path_resis(high_low, csvrow_to_subpaths(row))
   return eff_resistance
-#print("The effective resistance between the two objects is: ", 1/read_csv())
+read_material_conductance_values()
+read_contact_conductance_values()
+print("The effective resistance between the two objects is: ", 1/read_csv())
