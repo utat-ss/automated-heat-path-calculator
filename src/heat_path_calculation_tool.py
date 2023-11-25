@@ -49,7 +49,7 @@ low_contact_conductance_values = {
   "copper": {"aluminum" : [0., 0.]},
 }
 
-def read_material_conductance_values(filepath = "material_conductance_values.csv"):
+def read_material_conductance_values(filepath = "path_to_folder/material_conductance_value.csv"):
   with open(filepath, newline='') as f:
     r = csv.reader(f)
     for row in r:
@@ -58,7 +58,7 @@ def read_material_conductance_values(filepath = "material_conductance_values.csv
       elif (row[0] == "copper"): material_conductance_values["copper"]=int(row[1])
       elif (row[0] == "brass"): material_conductance_values["brass"]=int(row[1])
         
-def read_contact_conductance_values(filepath = "contact_conductance_values.csv"):
+def read_contact_conductance_values(filepath = "path_to_folder/contact_conductance_values.csv"):
   with open(filepath, newline='') as f:
     r = csv.reader(f)
     for row in r:
@@ -94,7 +94,6 @@ def read_contact_conductance_values(filepath = "contact_conductance_values.csv")
         row = next(r)
         high_contact_conductance_values["aluminum"]["copper"]=[float(row[2]), 0]
         high_contact_conductance_values["copper"]["aluminum"]=[float(row[2]), 0]
-read_contact_conductance_values()
 """
     This function deals with the contact resistance case. It asks for the second matrial with which the first is in contact, the pressure over the contact surface, and the contact surface area. 
     
@@ -127,8 +126,8 @@ def get_path_resis(high_low, subpaths):
   path_resis = 0
   for subpath in subpaths:
     material1 = subpath.material1
-    #if the pressure column is blanke, treat it as material conductance
-    if(subpath.pressure==""):
+    #if the pressure column is blank, treat it as material conductance
+    if(subpath.pressure==" " or subpath.material2==" "):
       path_resis+=material_resis(subpath)
     else:
       path_resis+=contact_resis(subpath, high_low)
@@ -139,7 +138,8 @@ def csvrow_to_subpaths(row):
   subpaths = []
   #print("asd", (len(row)-1)//5)
   for i in range(0, (len(row)-1)//5):
-    subpaths.append(sub_path(float(row[i+1]), float(row[i+2]), row[i+3], row[i+4], row[i+5]))
+    #print("SS",row[5*i], row[5*i+1], row[5*i+2], row[5*i+3], row[5*i+4], row[5*i+5])
+    subpaths.append(sub_path(float(row[5*i+1]), float(row[5*i+2]), row[5*i+3], row[5*i+4], row[5*i+5]))
   #print(len(subpaths))
   return subpaths
   
@@ -147,7 +147,7 @@ def csvrow_to_subpaths(row):
 reads csv file where each row is a complete heatpath(could be composed of multiple sections in series) and each row is in parralle to each other. 
 also calls get_path_resis to calculate the resistance of each path and keep track of the sum of their recipracals
 """
-def read_csv(filepath = 'Battery Support Bracket to Panel - Sheet1.csv'):
+def read_csv(filepath = 'path_to_folder/rail_to_xy_panel.csv'):
   eff_resistance = 0
   high_low = 0
   with open(filepath, newline='') as f:
@@ -157,6 +157,7 @@ def read_csv(filepath = 'Battery Support Bracket to Panel - Sheet1.csv'):
       elif(row[0] == "LOW"): high_low = 0
       eff_resistance+=1/get_path_resis(high_low, csvrow_to_subpaths(row))
   return eff_resistance
+
 read_material_conductance_values()
 read_contact_conductance_values()
 print("The effective resistance between the two objects is: ", 1/read_csv())
