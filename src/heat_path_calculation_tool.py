@@ -1,11 +1,13 @@
 import math
 import csv
+import os
 """
     This is a script that calculates the effective thermal resistance between two objects given the heat paths between them
     2023/10/15: finished implementing heat transfer equations for common shapes and functionality to calculate heat paths based on given parameters. Still need to check with Orrin on which conductance values we are using for high/mid/low cases and which materials. 
     2023/10/21: Added comments and filled in the dictionary storing conductance values
     2023/11/4: get the heat path datas from csv file
     2023/11/23: read the conductance values from heat path
+    2023/12/1: 
 """
 
 class sub_path:
@@ -31,25 +33,26 @@ material_conductance_values = {
 
 #low&high contact conductance values for high pressure. unit: W/m K
 high_contact_conductance_values = {
-  "steel": {"steel" : [0., 0.], "aluminum": [0., 0.]},
-  "aluminum": {"aluminum" : [0., 0.], "steel": [0., 0.]},
-  "copper": {"aluminum" : [0., 0.]},
+  "steel": {"steel" : [3240., 7770.], "aluminum": [7930., 7930.]},
+  "aluminum": {"aluminum" : [12840., 25170.], "steel": [7930., 7930.], "copper": [30880., 30880.]},
+  "copper": {"aluminum" : [30880., 30880.]},
 }
 #low&high contact conductance values for medium pressure. unit: W/m K
 mid_contact_conductance_values = {
-  "steel": {"steel" : [0., 0.], "aluminum": [0., 0.]},
-  "aluminum": {"aluminum" : [0., 0.], "steel": [0., 0.]},
-  "copper": {"aluminum" : [0., 0.]},
+  "steel": {"steel" : [2860., 6530.], "aluminum": [6110., 6110.]},
+  "aluminum": {"aluminum" : [9370., 18950.], "steel": [6110., 6110.], "copper": [22660., 22660.]},
+  "copper": {"aluminum" : [22660., 22660.]},
 }
 
 #low&high contact conductance values for low pressure. unit: W/m K
 low_contact_conductance_values = {
-  "steel": {"steel" : [0., 0.], "aluminum": [0., 0.]},
-  "aluminum": {"aluminum" : [0., 0.], "steel": [0., 0.]},
-  "copper": {"aluminum" : [0., 0.]},
+  "steel": {"steel" : [2080., 3210.], "aluminum": [3140., 3140.]},
+  "aluminum": {"aluminum" : [3820., 11050.], "steel": [3140., 3140.], "copper": [10300., 10300.]},
+  "copper": {"aluminum" : [10300., 10300.]},
 }
 
-def read_material_conductance_values(filepath = "path_to_folder/material_conductance_value.csv"):
+def read_material_conductance_values(filepath = ""):
+  if(not os.path.exists(filepath)): return
   with open(filepath, newline='') as f:
     r = csv.reader(f)
     for row in r:
@@ -58,7 +61,8 @@ def read_material_conductance_values(filepath = "path_to_folder/material_conduct
       elif (row[0] == "copper"): material_conductance_values["copper"]=int(row[1])
       elif (row[0] == "brass"): material_conductance_values["brass"]=int(row[1])
         
-def read_contact_conductance_values(filepath = "path_to_folder/contact_conductance_values.csv"):
+def read_contact_conductance_values(filepath = ""):
+  if(not os.path.exists(filepath)): return
   with open(filepath, newline='') as f:
     r = csv.reader(f)
     for row in r:
@@ -75,25 +79,24 @@ def read_contact_conductance_values(filepath = "path_to_folder/contact_conductan
         row = next(r)
         high_contact_conductance_values["aluminum"]["aluminum"]=[float(row[2]), float(row[4])]
         
-      #we are not reading the high conductance cases for the following because they are not availible
       elif (row[0] == "Aluminum to Steel"): 
-        low_contact_conductance_values["aluminum"]["steel"]=[float(row[2]), 0]
-        low_contact_conductance_values["steel"]["aluminum"]=[float(row[2]), 0]
+        low_contact_conductance_values["aluminum"]["steel"]=[float(row[2]), float(row[4])]
+        low_contact_conductance_values["steel"]["aluminum"]=[float(row[2]), float(row[4])]
         row = next(r)
-        mid_contact_conductance_values["aluminum"]["steel"]=[float(row[2]), 0]
-        mid_contact_conductance_values["steel"]["aluminum"]=[float(row[2]), 0]
+        mid_contact_conductance_values["aluminum"]["steel"]=[float(row[2]), float(row[4])]
+        mid_contact_conductance_values["steel"]["aluminum"]=[float(row[2]), float(row[4])]
         row = next(r)
-        high_contact_conductance_values["aluminum"]["steel"]=[float(row[2]), 0]
-        high_contact_conductance_values["steel"]["aluminum"]=[float(row[2]), 0]
+        high_contact_conductance_values["aluminum"]["steel"]=[float(row[2]), float(row[4])]
+        high_contact_conductance_values["steel"]["aluminum"]=[float(row[2]), float(row[4])]
       elif (row[0] == "Copper to Aluminum"): 
-        low_contact_conductance_values["aluminum"]["copper"]=[float(row[2]), 0]
-        low_contact_conductance_values["copper"]["aluminum"]=[float(row[2]), 0]
+        low_contact_conductance_values["aluminum"]["copper"]=[float(row[2]), float(row[4])]
+        low_contact_conductance_values["copper"]["aluminum"]=[float(row[2]), float(row[4])]
         row = next(r)
-        mid_contact_conductance_values["aluminum"]["copper"]=[float(row[2]), 0]
-        mid_contact_conductance_values["copper"]["aluminum"]=[float(row[2]), 0]
+        mid_contact_conductance_values["aluminum"]["copper"]=[float(row[2]), float(row[4])]
+        mid_contact_conductance_values["copper"]["aluminum"]=[float(row[2]), float(row[4])]
         row = next(r)
-        high_contact_conductance_values["aluminum"]["copper"]=[float(row[2]), 0]
-        high_contact_conductance_values["copper"]["aluminum"]=[float(row[2]), 0]
+        high_contact_conductance_values["aluminum"]["copper"]=[float(row[2]), float(row[4])]
+        high_contact_conductance_values["copper"]["aluminum"]=[float(row[2]), float(row[4])]
 """
     This function deals with the contact resistance case. It asks for the second matrial with which the first is in contact, the pressure over the contact surface, and the contact surface area. 
     
@@ -127,37 +130,35 @@ def get_path_resis(high_low, subpaths):
   for subpath in subpaths:
     material1 = subpath.material1
     #if the pressure column is blank, treat it as material conductance
-    if(subpath.pressure==" " or subpath.material2==" "):
+    if(subpath.pressure=="" or subpath.material2==""):
       path_resis+=material_resis(subpath)
     else:
       path_resis+=contact_resis(subpath, high_low)
-    #print(path_resis)
   return path_resis
 
 def csvrow_to_subpaths(row):
   subpaths = []
-  #print("asd", (len(row)-1)//5)
+  #each subpath is consisted of 5 elements in the row
   for i in range(0, (len(row)-1)//5):
-    #print("SS",row[5*i], row[5*i+1], row[5*i+2], row[5*i+3], row[5*i+4], row[5*i+5])
-    subpaths.append(sub_path(float(row[5*i+1]), float(row[5*i+2]), row[5*i+3], row[5*i+4], row[5*i+5]))
-  #print(len(subpaths))
+    subpaths.append(sub_path(float(row[5*i]), float(row[5*i+1]), row[5*i+2], row[5*i+3], row[5*i+4]))
   return subpaths
   
 """
 reads csv file where each row is a complete heatpath(could be composed of multiple sections in series) and each row is in parralle to each other. 
 also calls get_path_resis to calculate the resistance of each path and keep track of the sum of their recipracals
 """
-def read_csv(filepath = 'path_to_folder/rail_to_xy_panel.csv'):
-  eff_resistance = 0
+def read_csv(filepath = 'C:/Users/harry/Downloads/Heat-path-calculation-tool/battery top bracket to EPS.csv'):
+  eff_resistance = 0.0
   high_low = 0
   with open(filepath, newline='') as f:
     r = csv.reader(f)
     for row in r:
+      #first row as one column to indicate whether we're calculating for the high k-value case or the low k-value case
       if(row[0] == "HIGH"): high_low = 1
       elif(row[0] == "LOW"): high_low = 0
-      eff_resistance+=1/get_path_resis(high_low, csvrow_to_subpaths(row))
+      else: eff_resistance+=1.0/get_path_resis(high_low, csvrow_to_subpaths(row))
   return eff_resistance
 
 read_material_conductance_values()
 read_contact_conductance_values()
-print("The effective resistance between the two objects is: ", 1/read_csv())
+print("The effective resistance between the two objects is: ", 1.0/read_csv())
