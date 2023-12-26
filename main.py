@@ -3,7 +3,7 @@ sys.path.append(os.path.abspath(str(os.getcwd())+"/src"))
 import fileio, calculation
 
 #command line parsing
-Parser=argparse.ArgumentParser(description="Calculates the total resistance for a given heat path")
+Parser=argparse.ArgumentParser(description="Calculates the total resistance for given heat paths")
 Parser.add_argument("--input","-i",
                     metavar="FILE",
                     required=True,
