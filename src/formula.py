@@ -1,4 +1,4 @@
-import math
+from math import pi, log
 
 """
 Compute material resistance for rectangular cross section
@@ -11,10 +11,10 @@ def rec_cs(k, A, L = 1):
 Compute material resistance for cylindrical cross section
 """
 def cyl_cs(k, r1, r2, L):
-  return (math.log(r1/r2))/(2*math.pi*L*k)
+  return (log(r1/r2))/(2*pi*L*k)
 
 """
 Compute material resistance for sphereical object
 """
 def sph(k, r1, r2):
-  return (r2-r1)/(4*math.pi*r2*r1*k)
+  return (r2-r1)/(4*pi*r2*r1*k)
