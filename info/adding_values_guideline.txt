@@ -19,6 +19,6 @@ The first element is the contact with a LOW k-value and the second element for a
 
 APPENDING MATERIAL VALUES:
 
-Adding values here is straight forward, just the name of the material and its corresponding thermal resistance.
+Adding values here is straightforward, just the name of the material and its corresponding thermal resistance.
 
 -------------------------------------------------------------------------------------------------------------------
