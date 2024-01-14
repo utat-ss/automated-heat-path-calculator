@@ -1,4 +1,4 @@
-# THERMAL-automated-heat-path-calculator
+# automated-heat-path-calculator
 
 ### What does this program do?
 Calculate heat paths.
