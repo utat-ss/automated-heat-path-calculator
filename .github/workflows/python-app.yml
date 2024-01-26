@@ -37,6 +37,6 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest
-        PYTHONPATH=. pytest
+        PYTHONPATH= pytest
         pytest /test/test.py
 
