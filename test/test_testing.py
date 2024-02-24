@@ -1,5 +1,13 @@
-def test_testing():
-    assert 0!=1
+import calculation, fileio, formula, structure
 
-def test_testing2():
-    assert 0==0
+def test_rec_cs_regular():
+    assert formula.rec_cs(3, 5, 0.5) == 30
+
+def test_rec_cs_nothird():
+    assert formula.rec_cs(3, 5) == 15
+
+def test_rec_cs_zero():
+    assert formula.rec_cs(3, 5, 0) == 15
+
+def test_rec_cs_negative():
+    assert formula.rec_cs(3, -5, 0.5) == 30
