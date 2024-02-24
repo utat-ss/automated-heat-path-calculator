@@ -1,3 +1,5 @@
+import os, sys
+sys.path.append(os.path.abspath(str(os.getcwd())+"/src"))
 import src
 
 formula = src.formula
