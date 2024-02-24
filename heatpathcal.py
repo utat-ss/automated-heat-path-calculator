@@ -1,6 +1,6 @@
 import argparse, os, sys
 sys.path.append(os.path.abspath(str(os.getcwd())+"/src"))
-import fileio, calculation
+import calculation, fileio
 
 #command line parsing
 Parser=argparse.ArgumentParser(description="Calculates the total resistance for given heat paths")
