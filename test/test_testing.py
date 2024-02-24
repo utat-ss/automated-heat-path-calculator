@@ -1,8 +1,6 @@
 import os, sys
 sys.path.append(os.path.abspath(str(os.getcwd())+"/src"))
-import src
-
-formula = src.formula
+import calculation, fileio, formula, structure
 
 def test_rec_cs_regular():
     assert formula.rec_cs(3, 5, 0.5) == 30
