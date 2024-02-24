@@ -1,4 +1,6 @@
-import calculation, fileio, formula, structure
+import src
+
+formula = src.formula
 
 def test_rec_cs_regular():
     assert formula.rec_cs(3, 5, 0.5) == 30
