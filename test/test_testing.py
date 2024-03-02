@@ -1,5 +1,3 @@
-import os, sys
-sys.path.append(os.path.abspath(str(os.getcwd())+"/src"))
 import calculation, fileio, formula, structure
 
 def test_rec_cs_regular():
