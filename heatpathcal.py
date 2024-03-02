@@ -1,5 +1,5 @@
 import argparse, os, sys
-sys.path.append(os.path.abspath(str(os.getcwd())+"/src"))
+sys.path.append("./src")
 import calculation, fileio
 
 #command line parsing

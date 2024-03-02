@@ -1,3 +1,5 @@
+import sys
+sys.path.append("../src")
 import calculation, fileio, formula, structure
 
 def test_rec_cs_regular():
