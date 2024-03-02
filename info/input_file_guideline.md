@@ -14,4 +14,4 @@ If a heat path *travels through multiple paths*, keep them **on the same row**:\
 
 **If no length was given**, by default, **use 1**.
 
-For example files, please look in the [test directory](../test/) in this repository.
+For example files, please look in the [sample directory](../sample/) in this repository.
